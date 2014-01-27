@@ -1,5 +1,6 @@
 package com.example.utransport;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,8 @@ public class BusStop {
     private String id = "";
     private double latitude;
     private double longitude;
+    //private String[] times;
+    private static final int linesUntillTimes = 5;
 
     public BusStop (String address) throws MalformedURLException {
         this.url = new URL(address);
@@ -26,6 +29,7 @@ public class BusStop {
             this.latitude = Double.parseDouble(searchFor("GLatLng(", ','));
             String longPrecedent = latitude + ",";
             this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
+            //this.times = times();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,6 +51,8 @@ public class BusStop {
     public String getRouteNumber() throws IOException {
         return id;
     }
+
+    //public String[] getTimes() { return times; }
 
     //length is the length of the desired content (e.g. the id has length 4)
     //indicator is what directly precedes the desired content
@@ -145,5 +151,53 @@ public class BusStop {
         longitude = Math.abs(longitude);
 
         return Math.sqrt(Math.pow(routeLat - latitude, 2) + Math.pow(routeLon - longitude, 2));
+    }
+
+    //return all times associated
+    //modified search
+    public String[] times(String indicator) throws IOException {
+        String[] times;
+        InputStream stream = url.openStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+        String line;
+        int currentIndicatorID = 0;
+        int matchingChars = 0;
+
+        while((line = reader.readLine()) != null) {
+            line = reader.readLine();
+            for (int i = 0; i < line.length(); i++) {
+                if (line.charAt(i) == indicator.charAt(currentIndicatorID)) {
+                    matchingChars++;
+                    currentIndicatorID++;
+                    if(matchingChars == indicator.length()) {
+                        //indicator (type of route) has been found; the times soon follow.
+                        for (int j = 0; j < 5; j++) {
+                            reader.readLine();
+                        }
+                        String lineOfTimes = reader.readLine();
+                        System.out.println(lineOfTimes);
+                        return timesToArray(lineOfTimes);
+                    }
+                } else {
+                    matchingChars = 0;
+                    currentIndicatorID = 0;
+                }
+            }
+        }
+        reader.close();
+        stream.close();
+        throw new IllegalArgumentException("No times were found.");
+    }
+
+    private String[] timesToArray(String times) {
+        //each time is formatted as such: " 0:00*M" with a "<br>" at the end
+        int numTimes = (times.length() - 4) / 8;
+        String[] timesArray = new String[numTimes];
+        for (int i = 0; i < numTimes; i++) {
+            timesArray[i] = times.substring(0 + i * 8, 8 + i * 8);
+        }
+
+        return timesArray;
     }
 }

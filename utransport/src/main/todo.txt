@@ -1,0 +1,5 @@
+TO DO:
+Get Android phone's current GPS coordinates
+Collect all UT shuttle stop ids
+Collect each stop's arrival/departure times.
+Save option for times
