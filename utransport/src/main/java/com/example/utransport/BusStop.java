@@ -21,6 +21,7 @@ public class BusStop {
     private double longitude;
     //private String[] times;
     private static final int linesUntillTimes = 5;
+    private static final String beginningOfURL = "http://www.capmetro.org/STOPS.ASP?ID=";
 
     public BusStop (String address) throws MalformedURLException {
         this.url = new URL(address);
@@ -36,6 +37,10 @@ public class BusStop {
 
     }
 
+    public BusStop(int id) throws MalformedURLException {
+        this(beginningOfURL + id);
+    }
+
     public BusStop() throws MalformedURLException {
         throw new IllegalArgumentException("Must supply a URL.");
     }
@@ -48,9 +53,7 @@ public class BusStop {
         return longitude;
     }
 
-    public String getRouteNumber() throws IOException {
-        return id;
-    }
+    public String getRouteNumber() throws IOException { return id; }
 
     //public String[] getTimes() { return times; }
 
@@ -155,7 +158,9 @@ public class BusStop {
 
     //return all times associated
     //modified search
-    public String[] times(String indicator) throws IOException {
+    public String[] times(String indicator, int bound) throws IOException {
+        //bound 5 = inbound
+        //bound 11 = outbound
         String[] times;
         InputStream stream = url.openStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -172,11 +177,10 @@ public class BusStop {
                     currentIndicatorID++;
                     if(matchingChars == indicator.length()) {
                         //indicator (type of route) has been found; the times soon follow.
-                        for (int j = 0; j < 5; j++) {
+                        for (int j = 0; j < bound; j++) {
                             reader.readLine();
                         }
                         String lineOfTimes = reader.readLine();
-                        System.out.println(lineOfTimes);
                         return timesToArray(lineOfTimes);
                     }
                 } else {
@@ -188,6 +192,14 @@ public class BusStop {
         reader.close();
         stream.close();
         throw new IllegalArgumentException("No times were found.");
+    }
+
+    public String[] inboundTimes(String indicator) throws IOException {
+        return times(indicator, 5);
+    }
+
+    public String[] outboundTimes(String indicator) throws IOException {
+        return times(indicator, 11);
     }
 
     private String[] timesToArray(String times) {

@@ -4,7 +4,9 @@
     <string name="app_name">UTransport</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="main_button">Go!</string>
+    <string name="home_button">To Home!</string>
+    <string name="school_button">To School!</string>
     <string name="main_text">UTransport</string>
+    <string name="show_stop_id">Stop ID: </string>
 
 </resources>

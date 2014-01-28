@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CD660D"
+    tools:context="com.example.utransport.ShowStop"
+    tools:ignore="MergeRootFrame" >
+
+    <TextView
+        android:id="@+id/show_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_stop_id"
+        android:textSize="50sp"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="40dp"
+        />
+
+    <TextView
+        android:id="@+id/inbound_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INBOUND:"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_below="@id/show_title"
+        />
+
+    <TextView
+        android:id="@+id/inbound"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:layout_toRightOf="@id/inbound_title"
+        android:layout_marginTop="15dp"
+        android:text="N/A"
+        android:layout_below="@id/show_title"
+        />
+
+    <TextView
+        android:id="@+id/outbound_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OUTBOUND: "
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:layout_marginRight="10sp"
+        android:layout_marginTop="10sp"
+        android:layout_below="@id/inbound"
+        />
+
+    <TextView
+        android:id="@+id/outbound"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:layout_toRightOf="@id/outbound_title"
+        android:layout_marginTop="15dp"
+        android:text="N/A"
+        android:layout_below="@id/inbound"
+        />
+
+</RelativeLayout>
