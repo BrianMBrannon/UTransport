@@ -64,5 +64,16 @@
         android:text="N/A"
         android:layout_below="@id/inbound"
         />
-
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_below="@id/outbound">
+    <TextView
+        android:id="@+id/page_source"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:text="N/A"
+        android:textColor="#FFFFFF"
+        />
+    </ScrollView>
 </RelativeLayout>

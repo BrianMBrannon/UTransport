@@ -1,12 +1,18 @@
 package com.example.utransport;
 
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Created by bubba on 1/24/14.
@@ -15,33 +21,29 @@ import java.net.URL;
 
 public class BusStop {
 
-    private URL url;
-    private String id = "";
+    private String id;
     private double latitude;
     private double longitude;
+    private String pageSource;
     //private String[] times;
-    private static final int linesUntillTimes = 5;
-    private static final String beginningOfURL = "http://www.capmetro.org/STOPS.ASP?ID=";
+    private String URL = "http://www.capmetro.org/STOPS.ASP?ID=";
 
-    public BusStop (String address) throws MalformedURLException {
-        this.url = new URL(address);
+    public BusStop(int id) throws URISyntaxException {
+        URL += id;
+        this.id = Integer.toString(id);
         try {
-            this.id = searchFor("Stop ID ", ' ');
-            this.latitude = Double.parseDouble(searchFor("GLatLng(", ','));
-            String longPrecedent = latitude + ",";
-            this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
+            this.pageSource = getPageSource();
+            //this.id = searchFor("Stop ID ", ' ');
+            //this.latitude = Double.parseDouble(searchFor("GLatLng(", ','));
+            //String longPrecedent = latitude + ",";
+            //this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
             //this.times = times();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    public BusStop(int id) throws MalformedURLException {
-        this(beginningOfURL + id);
-    }
-
-    public BusStop() throws MalformedURLException {
+    public BusStop() {
         throw new IllegalArgumentException("Must supply a URL.");
     }
 
@@ -57,6 +59,40 @@ public class BusStop {
 
     //public String[] getTimes() { return times; }
 
+
+    /*
+     * SOURCE OF ERRORS:    Need a new thread to access internet
+     *                      Need INTERNET permissions
+     */
+    public String getPageSource() throws IOException {
+
+        BufferedReader input = null;
+        String data = null;
+
+        HttpClient client = new DefaultHttpClient();
+        HttpPost request = new HttpPost(URL);
+        //The below code crashes the app  -- SOLVED: replace old URL info with URI
+        HttpResponse response = client.execute(request);
+        HttpEntity entity = response.getEntity();
+        InputStream web = entity.getContent();
+        input = new BufferedReader(new InputStreamReader(web));
+        StringBuffer sb = new StringBuffer("");
+        String line = "";
+        String nl = System.getProperty("line.separator");
+
+        input.readLine();
+        input.readLine();
+        data = input.readLine();
+        while((line = input.readLine()) != null) {
+            sb.append(line + nl);
+        }
+        input.close();
+        //data = sb.toString();
+        return data;
+
+        //throw new IllegalArgumentException("End of getPageSource reached.");
+    }
+/*
     //length is the length of the desired content (e.g. the id has length 4)
     //indicator is what directly precedes the desired content
     private String searchFor(String indicator, int length) throws IOException {
@@ -211,5 +247,5 @@ public class BusStop {
         }
 
         return timesArray;
-    }
+    }*/
 }
