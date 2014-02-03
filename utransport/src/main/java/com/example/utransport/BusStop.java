@@ -1,6 +1,8 @@
 package com.example.utransport;
 
 
+import android.os.AsyncTask;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,10 +23,10 @@ import java.net.URISyntaxException;
 
 public class BusStop {
 
-    private String id;
+    private String id = "NoIDinit";
     private double latitude;
     private double longitude;
-    private String pageSource;
+    public String pageSource;
     //private String[] times;
     private String URL = "http://www.capmetro.org/STOPS.ASP?ID=";
 
@@ -61,9 +63,10 @@ public class BusStop {
 
 
     /*
-     * SOURCE OF ERRORS:    Need a new thread to access internet
+     * SOURCE OF ERRORS:    Need a new thread to access internet (Async Task)
      *                      Need INTERNET permissions
      */
+
     public String getPageSource() throws IOException {
 
         BufferedReader input = null;

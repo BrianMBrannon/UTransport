@@ -3,6 +3,7 @@ package com.example.utransport;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,7 +33,7 @@ public class ShowStop extends Activity {
     private TextView inboundText;
     private TextView outboundText;
     private TextView test;
-    private BusStop stop;
+    private BusStop myStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,24 +45,34 @@ public class ShowStop extends Activity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        new setData().execute();
+        /*
         Thread display = new Thread() {
             public void run() {
                 try {
-                    BusStop myStop = new BusStop(3852);
+                    BusStop theStop = new BusStop(3852);
+                    setID(theStop);
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
-                } /*catch (IOException e) {
+                } //catch (IOException e) {
+                   // e.printStackTrace();
+                //}
+            }
+            public void setID(BusStop theStop) {
+                try {
+                    stopText = (TextView) findViewById(R.id.show_title);
+                    stopText.append(theStop.getRouteNumber());
+                    test = (TextView) findViewById(R.id.page_source);
+                    test.setText(theStop.getPageSource());
+                } catch (IOException e) {
                     e.printStackTrace();
-                }*/
+                }
             }
         };
         display.start();
-
-        stopText = (TextView) findViewById(R.id.inbound_title);
-        stopText.append("3852");
-        test = (TextView) findViewById(R.id.page_source);
-        test.setText("Hey");
-
+        display.run();
+        */
        /* try {
             //"http://www.capmetro.org/STOPS.ASP?ID=3852"
             BusStop myStop = new BusStop(3852);
@@ -79,6 +91,30 @@ public class ShowStop extends Activity {
 */
     }
 
+    public class setData extends AsyncTask<BusStop, Integer, BusStop> {
+
+        @Override
+        protected BusStop doInBackground(BusStop... params) {
+            try {
+                BusStop theStop = new BusStop(3852);
+                return theStop;
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(BusStop myStop) {
+            try {
+                stopText = (TextView) findViewById(R.id.show_title);
+                stopText.append(myStop.getRouteNumber());
+                test = (TextView) findViewById(R.id.page_source);
+                test.setText(myStop.pageSource);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
