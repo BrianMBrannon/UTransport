@@ -23,7 +23,7 @@
         android:id="@+id/inbound_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="INBOUND:"
+        android:text="INBOUND: "
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:layout_marginRight="10sp"
@@ -38,7 +38,7 @@
         android:textColor="#FFFFFF"
         android:layout_toRightOf="@id/inbound_title"
         android:layout_marginTop="15dp"
-        android:text="N/A"
+        android:text=""
         android:layout_below="@id/show_title"
         />
 
@@ -61,7 +61,7 @@
         android:textColor="#FFFFFF"
         android:layout_toRightOf="@id/outbound_title"
         android:layout_marginTop="15dp"
-        android:text="N/A"
+        android:text=""
         android:layout_below="@id/inbound"
         />
 <ScrollView

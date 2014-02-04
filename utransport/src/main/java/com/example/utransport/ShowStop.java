@@ -47,48 +47,7 @@ public class ShowStop extends Activity {
         }
 
         new setData().execute();
-        /*
-        Thread display = new Thread() {
-            public void run() {
-                try {
-                    BusStop theStop = new BusStop(3852);
-                    setID(theStop);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                } //catch (IOException e) {
-                   // e.printStackTrace();
-                //}
-            }
-            public void setID(BusStop theStop) {
-                try {
-                    stopText = (TextView) findViewById(R.id.show_title);
-                    stopText.append(theStop.getRouteNumber());
-                    test = (TextView) findViewById(R.id.page_source);
-                    test.setText(theStop.getPageSource());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        display.start();
-        display.run();
-        */
-       /* try {
-            //"http://www.capmetro.org/STOPS.ASP?ID=3852"
-            BusStop myStop = new BusStop(3852);
-            test = (TextView) findViewById(R.id.page_source);
-            String data = myStop.getPageSource("http://www.capmetro.org/STOPS.ASP?ID=3852").toString();
-            //inboundText = (TextView) findViewById(R.id.inbound);
-           // outboundText = (TextView) findViewById(R.id.outbound);
-           // inboundText.setText(Arrays.toString(myStop.inboundTimes("UT WEEKDAY")));
-          //  outboundText.setText(Arrays.toString(myStop.outboundTimes("UT WEEKDAY")));
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }  catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-*/
+
     }
 
     public class setData extends AsyncTask<BusStop, Integer, BusStop> {
@@ -108,8 +67,12 @@ public class ShowStop extends Activity {
             try {
                 stopText = (TextView) findViewById(R.id.show_title);
                 stopText.append(myStop.getRouteNumber());
+                inboundText = (TextView) findViewById(R.id.inbound);
+                inboundText.append(myStop.latYLong);
+                //outboundText = (TextView) findViewById(R.id.outbound);
+                //outboundText.append((myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                test.setText(myStop.pageSource);
+                test.append("onPostExecuteFinished");
             } catch (IOException e) {
                 e.printStackTrace();
             }

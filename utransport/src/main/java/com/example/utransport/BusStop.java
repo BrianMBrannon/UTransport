@@ -1,8 +1,6 @@
 package com.example.utransport;
 
 
-import android.os.AsyncTask;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -24,9 +21,10 @@ import java.net.URISyntaxException;
 public class BusStop {
 
     private String id = "NoIDinit";
+    public String latYLong = "NoLatOrLongInit";
     private double latitude;
-    private double longitude;
-    public String pageSource;
+    private String longitude = "Not Found";
+    private InputStream pageSource;
     //private String[] times;
     private String URL = "http://www.capmetro.org/STOPS.ASP?ID=";
 
@@ -34,11 +32,12 @@ public class BusStop {
         URL += id;
         this.id = Integer.toString(id);
         try {
-            this.pageSource = getPageSource();
+            this.pageSource = retrieveSourceStream();
             //this.id = searchFor("Stop ID ", ' ');
-            //this.latitude = Double.parseDouble(searchFor("GLatLng(", ','));
-            //String longPrecedent = latitude + ",";
+            latAndLong();
+            //this.latitude = Double.parseDouble(searchforLat());
             //this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
+            //this.longitude = searchforLong();
             //this.times = times();
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,7 +52,7 @@ public class BusStop {
         return latitude;
     }
 
-    public Double getLongitude() throws IOException {
+    public String getLongitude() throws IOException {
         return longitude;
     }
 
@@ -67,10 +66,10 @@ public class BusStop {
      *                      Need INTERNET permissions
      */
 
-    public String getPageSource() throws IOException {
+    public InputStream retrieveSourceStream() throws IOException {
 
-        BufferedReader input = null;
-        String data = null;
+        //BufferedReader input = null;
+        //String data = null;
 
         HttpClient client = new DefaultHttpClient();
         HttpPost request = new HttpPost(URL);
@@ -78,20 +77,19 @@ public class BusStop {
         HttpResponse response = client.execute(request);
         HttpEntity entity = response.getEntity();
         InputStream web = entity.getContent();
-        input = new BufferedReader(new InputStreamReader(web));
-        StringBuffer sb = new StringBuffer("");
-        String line = "";
-        String nl = System.getProperty("line.separator");
-
-        input.readLine();
-        input.readLine();
-        data = input.readLine();
-        while((line = input.readLine()) != null) {
-            sb.append(line + nl);
-        }
-        input.close();
+//        input = new BufferedReader(new InputStreamReader(web));
+//        StringBuffer sb = new StringBuffer("");
+//        String line = "";
+//        String nl = System.getProperty("line.separator");
+        //input.readLine();
+        //input.readLine();
+        //data = input.readLine();
+//        while((line = input.readLine()) != null) {
+//            sb.append(line + nl);
+//        }
+        //input.close();
         //data = sb.toString();
-        return data;
+        return web;
 
         //throw new IllegalArgumentException("End of getPageSource reached.");
     }
@@ -138,16 +136,15 @@ public class BusStop {
         stream.close();
         return "N/A";
     }
-
+    */
     //indicator is what precedes the desired content
     //delim is what follows the desired content
     private String searchFor(String indicator, char delim) throws IOException {
         if(indicator.length() < 1) {
             throw new IllegalArgumentException("The indicator must exist.");
         }
-
-        InputStream stream = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        //InputStream stream = pageSource.
+        BufferedReader reader = new BufferedReader(new InputStreamReader(pageSource));
 
         String line;
         int currentIndicatorID = 0;
@@ -160,16 +157,16 @@ public class BusStop {
                     matchingChars++;
                     currentIndicatorID++;
                     if(matchingChars == indicator.length()) {
-                        //indicator (in <title>) has been found; the ID now follows it.
-                        String id = "";
+                        //indicator (in <title>) has been found; the content now follows it.
+                        String content = "";
                         int j = 1;
                         while (line.charAt(i + j) != delim) {
-                            id += line.charAt(i + j);
+                            content += line.charAt(i + j);
                             j++;
                         }
                         reader.close();
-                        stream.close();
-                        return id;
+                        pageSource.close();
+                        return content;
                     }
                 } else {
                     matchingChars = 0;
@@ -178,13 +175,46 @@ public class BusStop {
             }
         }
         reader.close();
-        stream.close();
+        pageSource.close();
         return "N/A";
+    }
+
+    private void latAndLong() throws IOException {
+        this.latYLong = searchFor("GLatLng(", ')');
+    }
+
+    private String searchforLat() {
+        int index = 0;
+        char delim = ',';
+        String latitude = "";
+        while(latYLong.charAt(index) != delim && index != latYLong.length()) {
+            latitude += latYLong.charAt(index);
+            if (latYLong.charAt(index) == delim) {
+                return latitude;
+            }
+            index++;
+        }
+        return "Searched; nothing found.";
+    }
+
+    //pre - latitude has been found
+    private String searchforLong() {
+        int index = Double.toString(latitude).length() - 1;
+        char delim = ')';
+        String longitude = "";
+        while(latYLong.charAt(index) != delim && index != latYLong.length()) {
+            longitude += latYLong.charAt(index);
+            if (latYLong.charAt(index) == delim) {
+                return longitude;
+            }
+            index++;
+        }
+        return "Searched; nothing found.";
     }
 
     //returns the distance of a straight line between the two stops
     //perhaps the Google Maps API has a better method
-    public double distanceTo(BusStop route) throws IOException {
+   /* public double distanceTo(BusStop route) throws IOException {
         //Taking the absolute value results in an incorrect latitude and longitude
         //For the purpose of finding the distance between the two, this is irrelevant
         double routeLat = Math.abs(route.getLatitude());
@@ -193,23 +223,21 @@ public class BusStop {
         longitude = Math.abs(longitude);
 
         return Math.sqrt(Math.pow(routeLat - latitude, 2) + Math.pow(routeLon - longitude, 2));
-    }
+    }*/
 
     //return all times associated
     //modified search
-    public String[] times(String indicator, int bound) throws IOException {
+    /*public String[] times(String indicator, int bound) throws IOException {
         //bound 5 = inbound
         //bound 11 = outbound
         String[] times;
-        InputStream stream = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
         String line;
         int currentIndicatorID = 0;
         int matchingChars = 0;
 
-        while((line = reader.readLine()) != null) {
-            line = reader.readLine();
+
+        while((line = pageSource.readLine()) != null) {
+            line = pageSource.readLine();
             for (int i = 0; i < line.length(); i++) {
                 if (line.charAt(i) == indicator.charAt(currentIndicatorID)) {
                     matchingChars++;
@@ -217,9 +245,9 @@ public class BusStop {
                     if(matchingChars == indicator.length()) {
                         //indicator (type of route) has been found; the times soon follow.
                         for (int j = 0; j < bound; j++) {
-                            reader.readLine();
+                            pageSource.readLine();
                         }
-                        String lineOfTimes = reader.readLine();
+                        String lineOfTimes = pageSource.readLine();
                         return timesToArray(lineOfTimes);
                     }
                 } else {
@@ -228,8 +256,8 @@ public class BusStop {
                 }
             }
         }
-        reader.close();
-        stream.close();
+        pageSource.close();
+        //stream.close();
         throw new IllegalArgumentException("No times were found.");
     }
 
