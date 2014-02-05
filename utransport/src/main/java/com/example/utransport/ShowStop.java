@@ -68,9 +68,9 @@ public class ShowStop extends Activity {
                 stopText = (TextView) findViewById(R.id.show_title);
                 stopText.append(myStop.getRouteNumber());
                 inboundText = (TextView) findViewById(R.id.inbound);
-                inboundText.append(myStop.latYLong);
-                //outboundText = (TextView) findViewById(R.id.outbound);
-                //outboundText.append((myStop.getLongitude()));
+                inboundText.append(Double.toString(myStop.getLatitude()));
+                outboundText = (TextView) findViewById(R.id.outbound);
+                outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
                 test.append("onPostExecuteFinished");
             } catch (IOException e) {

@@ -23,7 +23,7 @@ public class BusStop {
     private String id = "NoIDinit";
     public String latYLong = "NoLatOrLongInit";
     private double latitude;
-    private String longitude = "Not Found";
+    private double longitude;
     private InputStream pageSource;
     //private String[] times;
     private String URL = "http://www.capmetro.org/STOPS.ASP?ID=";
@@ -35,9 +35,9 @@ public class BusStop {
             this.pageSource = retrieveSourceStream();
             //this.id = searchFor("Stop ID ", ' ');
             latAndLong();
-            //this.latitude = Double.parseDouble(searchforLat());
+            this.latitude = Double.parseDouble(searchForLat());
             //this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
-            //this.longitude = searchforLong();
+            this.longitude = Double.parseDouble(searchForLong());
             //this.times = times();
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,11 +48,11 @@ public class BusStop {
         throw new IllegalArgumentException("Must supply a URL.");
     }
 
-    public Double getLatitude() throws IOException {
+    public double getLatitude() throws IOException {
         return latitude;
     }
 
-    public String getLongitude() throws IOException {
+    public double getLongitude() throws IOException {
         return longitude;
     }
 
@@ -180,33 +180,35 @@ public class BusStop {
     }
 
     private void latAndLong() throws IOException {
-        this.latYLong = searchFor("GLatLng(", ')');
+        //extra space needed for searchForLong
+        this.latYLong = searchFor("GLatLng(", ')') + ' ';
     }
 
-    private String searchforLat() {
+    private String searchForLat() {
         int index = 0;
         char delim = ',';
         String latitude = "";
-        while(latYLong.charAt(index) != delim && index != latYLong.length()) {
-            latitude += latYLong.charAt(index);
+        while(index < latYLong.length()) {
             if (latYLong.charAt(index) == delim) {
                 return latitude;
             }
+            latitude += latYLong.charAt(index);
             index++;
         }
         return "Searched; nothing found.";
     }
 
+    //The delim is WRONG for this method.
     //pre - latitude has been found
-    private String searchforLong() {
-        int index = Double.toString(latitude).length() - 1;
-        char delim = ')';
+    private String searchForLong() {
+        int index = Double.toString(latitude).length() + 1;
+        char delim = ' ';
         String longitude = "";
-        while(latYLong.charAt(index) != delim && index != latYLong.length()) {
-            longitude += latYLong.charAt(index);
+        while(index < latYLong.length()) {
             if (latYLong.charAt(index) == delim) {
                 return longitude;
             }
+            longitude += latYLong.charAt(index);
             index++;
         }
         return "Searched; nothing found.";
