@@ -1,6 +1,8 @@
 package com.example.utransport;
 
 
+import android.util.Log;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Created by bubba on 1/24/14.
@@ -25,7 +28,9 @@ public class BusStop {
     private double latitude;
     private double longitude;
     private InputStream pageSource;
-    //private String[] times;
+    private String[] inboundTimes;
+    private String[] outboundTimes;
+    public String tester;
     private String URL = "http://www.capmetro.org/STOPS.ASP?ID=";
 
     public BusStop(int id) throws URISyntaxException {
@@ -38,7 +43,9 @@ public class BusStop {
             this.latitude = Double.parseDouble(searchForLat());
             //this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
             this.longitude = Double.parseDouble(searchForLong());
-            //this.times = times();
+            //the parameters for these two will be generalized later on.
+            this.tester = Arrays.toString(times("WEEKDAY", 5));
+            //this.outboundTimes = times("WEEKDAY", 11);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,6 +72,11 @@ public class BusStop {
      * SOURCE OF ERRORS:    Need a new thread to access internet (Async Task)
      *                      Need INTERNET permissions
      */
+
+    //NOTE: these two methods cause the appplication to crash, fix.
+    public String[] getInbound() { return inboundTimes; }
+
+    public String[] getOutbound() { return outboundTimes; }
 
     public InputStream retrieveSourceStream() throws IOException {
 
@@ -164,8 +176,8 @@ public class BusStop {
                             content += line.charAt(i + j);
                             j++;
                         }
-                        reader.close();
-                        pageSource.close();
+                        //reader.close();
+//                        pageSource.close();
                         return content;
                     }
                 } else {
@@ -174,8 +186,8 @@ public class BusStop {
                 }
             }
         }
-        reader.close();
-        pageSource.close();
+//        reader.close();
+//        pageSource.close();
         return "N/A";
     }
 
@@ -216,7 +228,7 @@ public class BusStop {
 
     //returns the distance of a straight line between the two stops
     //perhaps the Google Maps API has a better method
-   /* public double distanceTo(BusStop route) throws IOException {
+   public double distanceTo(BusStop route) throws IOException {
         //Taking the absolute value results in an incorrect latitude and longitude
         //For the purpose of finding the distance between the two, this is irrelevant
         double routeLat = Math.abs(route.getLatitude());
@@ -225,21 +237,23 @@ public class BusStop {
         longitude = Math.abs(longitude);
 
         return Math.sqrt(Math.pow(routeLat - latitude, 2) + Math.pow(routeLon - longitude, 2));
-    }*/
+    }
 
     //return all times associated
     //modified search
-    /*public String[] times(String indicator, int bound) throws IOException {
+    public String[] times(String indicator, int bound) throws IOException {
         //bound 5 = inbound
-        //bound 11 = outbound
+        //bound 11 = outbound  will be generalized later
         String[] times;
         String line;
         int currentIndicatorID = 0;
         int matchingChars = 0;
-
-
-        while((line = pageSource.readLine()) != null) {
-            line = pageSource.readLine();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(pageSource));
+        System.out.println("reader was declared");
+        while((line = reader.readLine()) != null) {
+            System.out.println("while loop entered");
+            //line = reader.readLine();
+            System.out.print(line);
             for (int i = 0; i < line.length(); i++) {
                 if (line.charAt(i) == indicator.charAt(currentIndicatorID)) {
                     matchingChars++;
@@ -247,9 +261,9 @@ public class BusStop {
                     if(matchingChars == indicator.length()) {
                         //indicator (type of route) has been found; the times soon follow.
                         for (int j = 0; j < bound; j++) {
-                            pageSource.readLine();
+                            reader.readLine();
                         }
-                        String lineOfTimes = pageSource.readLine();
+                        String lineOfTimes = reader.readLine();
                         return timesToArray(lineOfTimes);
                     }
                 } else {
@@ -258,8 +272,8 @@ public class BusStop {
                 }
             }
         }
-        pageSource.close();
-        //stream.close();
+        //pageSource.close();
+        reader.close();
         throw new IllegalArgumentException("No times were found.");
     }
 
@@ -280,5 +294,5 @@ public class BusStop {
         }
 
         return timesArray;
-    }*/
+    }
 }

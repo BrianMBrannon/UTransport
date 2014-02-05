@@ -55,7 +55,7 @@ public class ShowStop extends Activity {
         @Override
         protected BusStop doInBackground(BusStop... params) {
             try {
-                BusStop theStop = new BusStop(3852);
+                BusStop theStop = new BusStop(5039);
                 return theStop;
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -72,7 +72,7 @@ public class ShowStop extends Activity {
                 outboundText = (TextView) findViewById(R.id.outbound);
                 outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                test.append("onPostExecuteFinished");
+                test.setText(myStop.tester);
             } catch (IOException e) {
                 e.printStackTrace();
             }
