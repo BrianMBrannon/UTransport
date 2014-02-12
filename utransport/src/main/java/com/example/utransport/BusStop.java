@@ -44,7 +44,7 @@ public class BusStop {
             //this.longitude = Double.parseDouble(searchFor(longPrecedent, ')'));
             this.longitude = Double.parseDouble(searchForLong());
             //the parameters for these two will be generalized later on.
-            this.tester = Arrays.toString(times("WEEKDAY", 5));
+            //this.tester = Arrays.toString(times("WEEKDAY", 5));
             //this.outboundTimes = times("WEEKDAY", 11);
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,9 +69,9 @@ public class BusStop {
 
 
     /*
-     * SOURCE OF ERRORS:    Need a new thread to access internet (Async Task)
-     *                      Need INTERNET permissions
-     */
+* SOURCE OF ERRORS: Need a new thread to access internet (Async Task)
+* Need INTERNET permissions
+*/
 
     //NOTE: these two methods cause the appplication to crash, fix.
     public String[] getInbound() { return inboundTimes; }
@@ -85,68 +85,68 @@ public class BusStop {
 
         HttpClient client = new DefaultHttpClient();
         HttpPost request = new HttpPost(URL);
-        //The below code crashes the app  -- SOLVED: replace old URL info with URI
+        //The below code crashes the app -- SOLVED: replace old URL info with URI
         HttpResponse response = client.execute(request);
         HttpEntity entity = response.getEntity();
         InputStream web = entity.getContent();
-//        input = new BufferedReader(new InputStreamReader(web));
-//        StringBuffer sb = new StringBuffer("");
-//        String line = "";
-//        String nl = System.getProperty("line.separator");
+// input = new BufferedReader(new InputStreamReader(web));
+// StringBuffer sb = new StringBuffer("");
+// String line = "";
+// String nl = System.getProperty("line.separator");
         //input.readLine();
         //input.readLine();
         //data = input.readLine();
-//        while((line = input.readLine()) != null) {
-//            sb.append(line + nl);
-//        }
+// while((line = input.readLine()) != null) {
+// sb.append(line + nl);
+// }
         //input.close();
         //data = sb.toString();
         return web;
 
         //throw new IllegalArgumentException("End of getPageSource reached.");
     }
-/*
+    /*
     //length is the length of the desired content (e.g. the id has length 4)
     //indicator is what directly precedes the desired content
     private String searchFor(String indicator, int length) throws IOException {
-        if(indicator.length() < 1) {
-            throw new IllegalArgumentException("The indicator must exist.");
-        }
+    if(indicator.length() < 1) {
+    throw new IllegalArgumentException("The indicator must exist.");
+    }
 
-        InputStream stream = url.openStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+    InputStream stream = url.openStream();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-        String line;
-        int currentIndicatorID = 0;
-        int matchingChars = 0;
+    String line;
+    int currentIndicatorID = 0;
+    int matchingChars = 0;
 
-        while((line = reader.readLine()) != null) {
-            line = reader.readLine();
-            for (int i = 0; i < line.length(); i++) {
-                if (line.charAt(i) == indicator.charAt(currentIndicatorID)) {
-                    matchingChars++;
-                    currentIndicatorID++;
-                    if(matchingChars == indicator.length()) {
-                        //indicator (in <title>) has been found; the ID now follows it.
-                        String id = "";
-                        for(int j = 1; j <= length; j++) {
-                            //NOTE- assumes the ID is 'length' characters long
-                            //NOTE- assumes there is no text after the ID
-                            id += line.charAt(i + j);
-                        }
-                        reader.close();
-                        stream.close();
-                        return id;
-                    }
-                } else {
-                    matchingChars = 0;
-                    currentIndicatorID = 0;
-                }
-            }
-        }
-        reader.close();
-        stream.close();
-        return "N/A";
+    while((line = reader.readLine()) != null) {
+    line = reader.readLine();
+    for (int i = 0; i < line.length(); i++) {
+    if (line.charAt(i) == indicator.charAt(currentIndicatorID)) {
+    matchingChars++;
+    currentIndicatorID++;
+    if(matchingChars == indicator.length()) {
+    //indicator (in <title>) has been found; the ID now follows it.
+    String id = "";
+    for(int j = 1; j <= length; j++) {
+    //NOTE- assumes the ID is 'length' characters long
+    //NOTE- assumes there is no text after the ID
+    id += line.charAt(i + j);
+    }
+    reader.close();
+    stream.close();
+    return id;
+    }
+    } else {
+    matchingChars = 0;
+    currentIndicatorID = 0;
+    }
+    }
+    }
+    reader.close();
+    stream.close();
+    return "N/A";
     }
     */
     //indicator is what precedes the desired content
@@ -177,7 +177,7 @@ public class BusStop {
                             j++;
                         }
                         //reader.close();
-//                        pageSource.close();
+// pageSource.close();
                         return content;
                     }
                 } else {
@@ -186,8 +186,8 @@ public class BusStop {
                 }
             }
         }
-//        reader.close();
-//        pageSource.close();
+// reader.close();
+// pageSource.close();
         return "N/A";
     }
 
@@ -228,7 +228,7 @@ public class BusStop {
 
     //returns the distance of a straight line between the two stops
     //perhaps the Google Maps API has a better method
-   public double distanceTo(BusStop route) throws IOException {
+    public double distanceTo(BusStop route) throws IOException {
         //Taking the absolute value results in an incorrect latitude and longitude
         //For the purpose of finding the distance between the two, this is irrelevant
         double routeLat = Math.abs(route.getLatitude());
@@ -243,7 +243,7 @@ public class BusStop {
     //modified search
     public String[] times(String indicator, int bound) throws IOException {
         //bound 5 = inbound
-        //bound 11 = outbound  will be generalized later
+        //bound 11 = outbound will be generalized later
         String[] times;
         String line;
         int currentIndicatorID = 0;

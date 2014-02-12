@@ -4,3 +4,7 @@ Collect all UT shuttle stop ids?
 Collect each stop's arrival/departure times.
 Save option for times
 Get BufferedReader from a StringBuffer?
+
+MYSTERIOUS ERROR:
+There's something that's just not resetting when web scraping.
+The code breaks without any meddling at all, must fix.

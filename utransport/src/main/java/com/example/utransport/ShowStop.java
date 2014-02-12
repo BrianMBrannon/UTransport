@@ -1,7 +1,6 @@
 package com.example.utransport;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,22 +9,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 public class ShowStop extends Activity {
 
@@ -34,6 +25,8 @@ public class ShowStop extends Activity {
     private TextView outboundText;
     private TextView test;
     private BusStop myStop;
+    //stopNumber will later be given by finding the closest route
+    private int stopNumber = 5039;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,16 +39,22 @@ public class ShowStop extends Activity {
                     .commit();
         }
 
-        new setData().execute();
-
+        File myFile = getApplicationContext().getFileStreamPath(stopNumber + "");
+        //delete for testing purposes
+        myFile.delete();
+        //if the file exists we can read the times from the device itself
+        if (!myFile.exists()) {
+            //Set up BusStop and Activity UI
+            new setDataFromInternet().execute();
+        }
     }
 
-    public class setData extends AsyncTask<BusStop, Integer, BusStop> {
+    public class setDataFromInternet extends AsyncTask<BusStop, Integer, BusStop> {
 
         @Override
         protected BusStop doInBackground(BusStop... params) {
             try {
-                BusStop theStop = new BusStop(5039);
+                BusStop theStop = new BusStop(stopNumber);
                 return theStop;
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -72,12 +71,38 @@ public class ShowStop extends Activity {
                 outboundText = (TextView) findViewById(R.id.outbound);
                 outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                test.setText(myStop.tester);
+                //test.setText(myStop.tester);
+
+                try {
+                    FileOutputStream fileWriter;
+                    String fileName = myStop.getRouteNumber();
+                    fileWriter = openFileOutput(fileName, MODE_APPEND);
+                    fileWriter.write((fileName + "\n").getBytes());
+                    fileWriter.write((Double.toString(myStop.getLatitude()) + "\n").getBytes());
+                    fileWriter.write((Double.toString(myStop.getLongitude()) + "\n").getBytes());
+                    //Weekday to be later made into a variable
+                    fileWriter.write((myStop.inboundTimes("WEEKDAY") + "\n").getBytes());
+                    fileWriter.write((myStop.outboundTimes("WEEKDAY") + "\n").getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        //i may not need to return a BusStop Object
     }
+
+    public void setDataFromPhone(String myFile) {
+        try {
+            FileInputStream fileReader = openFileInput(myFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
