@@ -248,6 +248,8 @@ public class BusStop {
         String line;
         int currentIndicatorID = 0;
         int matchingChars = 0;
+        //Need to reset the pageSource for multiple calls.
+        pageSource.reset();
         BufferedReader reader = new BufferedReader(new InputStreamReader(pageSource));
         System.out.println("reader was declared");
         while((line = reader.readLine()) != null) {

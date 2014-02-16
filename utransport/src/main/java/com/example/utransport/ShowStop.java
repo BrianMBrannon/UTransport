@@ -11,10 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -39,13 +42,17 @@ public class ShowStop extends Activity {
                     .commit();
         }
 
-        File myFile = getApplicationContext().getFileStreamPath(stopNumber + "");
-        //delete for testing purposes
-        myFile.delete();
+        //NOTE that the fileName is the stopNumber in a .txt file.  Eg. 3852.txt
+        File myFile = getApplicationContext().getFileStreamPath(stopNumber + ".txt");
+        //delete the file for testing purposes
+        //myFile.delete();
         //if the file exists we can read the times from the device itself
         if (!myFile.exists()) {
             //Set up BusStop and Activity UI
             new setDataFromInternet().execute();
+        }
+        else {
+            setDataFromPhone(myFile);
         }
     }
 
@@ -71,11 +78,11 @@ public class ShowStop extends Activity {
                 outboundText = (TextView) findViewById(R.id.outbound);
                 outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                //test.setText(myStop.tester);
+                test.setText(myStop.tester);
 
                 try {
                     FileOutputStream fileWriter;
-                    String fileName = myStop.getRouteNumber();
+                    String fileName = myStop.getRouteNumber() + ".txt";
                     fileWriter = openFileOutput(fileName, MODE_APPEND);
                     fileWriter.write((fileName + "\n").getBytes());
                     fileWriter.write((Double.toString(myStop.getLatitude()) + "\n").getBytes());
@@ -95,10 +102,21 @@ public class ShowStop extends Activity {
         //i may not need to return a BusStop Object
     }
 
-    public void setDataFromPhone(String myFile) {
+    public void setDataFromPhone(File myFile) {
         try {
-            FileInputStream fileReader = openFileInput(myFile);
+            FileReader fileReader = new FileReader(myFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            stopText = (TextView) findViewById(R.id.show_title);
+            stopText.setText(bufferedReader.readLine());
+            inboundText = (TextView) findViewById(R.id.inbound);
+            inboundText.setText(bufferedReader.readLine());
+            outboundText = (TextView) findViewById(R.id.outbound);
+            outboundText.setText(bufferedReader.readLine());
+            test = (TextView) findViewById(R.id.page_source);
+            test.setText("I READ FROM THE PHONE!");
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
