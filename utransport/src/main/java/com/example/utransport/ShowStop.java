@@ -12,14 +12,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class ShowStop extends Activity {
 
@@ -27,7 +27,9 @@ public class ShowStop extends Activity {
     private TextView inboundText;
     private TextView outboundText;
     private TextView test;
-    private BusStop myStop;
+
+    private int deviceMinutes;
+    private String dayOfWeek;
     //stopNumber will later be given by finding the closest route
     private int stopNumber = 5039;
 
@@ -42,10 +44,15 @@ public class ShowStop extends Activity {
                     .commit();
         }
 
+        MobileDevice myDevice = new MobileDevice();
+        this.dayOfWeek = myDevice.getWeekday();
+        this.deviceMinutes = myDevice.getAllMinutes();
+
         //NOTE that the fileName is the stopNumber in a .txt file.  Eg. 3852.txt
         File myFile = getApplicationContext().getFileStreamPath(stopNumber + ".txt");
         //delete the file for testing purposes
         //myFile.delete();
+
         //if the file exists we can read the times from the device itself
         if (!myFile.exists()) {
             //Set up BusStop and Activity UI
@@ -61,7 +68,7 @@ public class ShowStop extends Activity {
         @Override
         protected BusStop doInBackground(BusStop... params) {
             try {
-                BusStop theStop = new BusStop(stopNumber);
+                BusStop theStop = new BusStop(stopNumber, dayOfWeek);
                 return theStop;
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -78,18 +85,18 @@ public class ShowStop extends Activity {
                 outboundText = (TextView) findViewById(R.id.outbound);
                 outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                test.setText(myStop.tester);
+                test.setText(myStop.getInboundTimes());
+                test.append("\n" + myStop.getOutboundTimes());
 
                 try {
                     FileOutputStream fileWriter;
                     String fileName = myStop.getRouteNumber() + ".txt";
                     fileWriter = openFileOutput(fileName, MODE_APPEND);
-                    fileWriter.write((fileName + "\n").getBytes());
+                    fileWriter.write((fileName.substring(0, 5) + "\n").getBytes());
                     fileWriter.write((Double.toString(myStop.getLatitude()) + "\n").getBytes());
                     fileWriter.write((Double.toString(myStop.getLongitude()) + "\n").getBytes());
-                    //Weekday to be later made into a variable
-                    fileWriter.write((myStop.inboundTimes("WEEKDAY") + "\n").getBytes());
-                    fileWriter.write((myStop.outboundTimes("WEEKDAY") + "\n").getBytes());
+                    fileWriter.write((myStop.getInboundTimes() + "\n").getBytes());
+                    fileWriter.write((myStop.getOutboundTimes() + "\n").getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -107,13 +114,16 @@ public class ShowStop extends Activity {
             FileReader fileReader = new FileReader(myFile);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             stopText = (TextView) findViewById(R.id.show_title);
-            stopText.setText(bufferedReader.readLine());
+            stopText.setText(bufferedReader.readLine().substring(0,4));
             inboundText = (TextView) findViewById(R.id.inbound);
             inboundText.setText(bufferedReader.readLine());
             outboundText = (TextView) findViewById(R.id.outbound);
             outboundText.setText(bufferedReader.readLine());
             test = (TextView) findViewById(R.id.page_source);
-            test.setText("I READ FROM THE PHONE!");
+            MobileDevice myDevice = new MobileDevice();
+            test.setText(myDevice.getWeekday() + " " + deviceMinutes);
+            test.append("\n" + bufferedReader.readLine());
+            test.append("\n" + bufferedReader.readLine());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -8,23 +8,44 @@ import android.text.format.Time;
 public class MobileDevice {
 
     //Android API
-    Time myTime;
-    {
-        myTime = new Time();
-    }
+    private int hour;
+    private int minute;
+    private String dayOfWeek;
 
-    private int hour = myTime.hour;
-    private int minute = myTime.minute;
+    public MobileDevice() {
+        Time myTime;
+        {
+            myTime = new Time();
+        }
+        myTime.setToNow();
+        this.hour = myTime.hour;
+        this.minute = myTime.minute;
+        switch(myTime.weekDay) {
+            case 0:
+                dayOfWeek = "SUNDAY";
+                break;
+            case 6:
+                dayOfWeek = "SATURDAY";
+                break;
+            default:
+                dayOfWeek = "WEEKDAY";
+                break;
+        }
+    }
 
     public int getHour() {
         return hour;
     }
 
-    public int minute() {
+    public int getMinute() {
         return minute;
     }
 
     public int getAllMinutes() {
         return minute + hour * 60;
+    }
+
+    public String getWeekday() {
+        return dayOfWeek;
     }
 }

@@ -3,7 +3,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CD660D"
+    android:background="@drawable/background"
     tools:context="com.example.utransport.MainActivity"
     tools:ignore="MergeRootFrame">
 
@@ -14,7 +14,7 @@
         android:text="@string/main_text"
         android:textSize="50sp"
         android:layout_centerHorizontal="true"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
     />
 
     <Button
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="false"
         android:text="@string/home_button"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:layout_margin="25dp"
         android:layout_below="@id/main_text"
     />
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="false"
         android:text="@string/school_button"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:layout_marginTop="25dp"
         android:layout_below="@id/main_text"
         android:layout_toRightOf="@id/home_button"

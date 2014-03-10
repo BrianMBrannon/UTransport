@@ -4,7 +4,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#CD660D"
+    android:background="@drawable/background"
     tools:context="com.example.utransport.ShowStop"
     tools:ignore="MergeRootFrame" >
 
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="@string/show_stop_id"
         android:textSize="50sp"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="40dp"
         />
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="INBOUND: "
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:textSize="20sp"
         android:layout_marginRight="10sp"
         android:layout_marginTop="10sp"
@@ -35,7 +35,7 @@
         android:id="@+id/inbound"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:layout_toRightOf="@id/inbound_title"
         android:layout_marginTop="15dp"
         android:text=""
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="OUTBOUND: "
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:textSize="20sp"
         android:layout_marginRight="10sp"
         android:layout_marginTop="10sp"
@@ -58,7 +58,7 @@
         android:id="@+id/outbound"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         android:layout_toRightOf="@id/outbound_title"
         android:layout_marginTop="15dp"
         android:text=""
@@ -73,7 +73,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:text="N/A"
-        android:textColor="#FFFFFF"
+        android:textColor="#CD660D"
         />
     </ScrollView>
 </RelativeLayout>
