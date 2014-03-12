@@ -85,8 +85,10 @@ public class ShowStop extends Activity {
                 outboundText = (TextView) findViewById(R.id.outbound);
                 outboundText.append(Double.toString(myStop.getLongitude()));
                 test = (TextView) findViewById(R.id.page_source);
-                test.setText(myStop.getInboundTimes());
-                test.append("\n" + myStop.getOutboundTimes());
+                int[] inboundMinutes = timesToMinutes(myStop.getInboundTimes());
+                int[] outboundMinutes = timesToMinutes(myStop.getOutboundTimes());
+                test.setText(Arrays.toString(inboundMinutes));
+                test.append("\n" + Arrays.toString(outboundMinutes));
 
                 try {
                     FileOutputStream fileWriter;
@@ -95,8 +97,8 @@ public class ShowStop extends Activity {
                     fileWriter.write((fileName.substring(0, 5) + "\n").getBytes());
                     fileWriter.write((Double.toString(myStop.getLatitude()) + "\n").getBytes());
                     fileWriter.write((Double.toString(myStop.getLongitude()) + "\n").getBytes());
-                    fileWriter.write((myStop.getInboundTimes() + "\n").getBytes());
-                    fileWriter.write((myStop.getOutboundTimes() + "\n").getBytes());
+                    fileWriter.write((Arrays.toString(inboundMinutes) + "\n").getBytes());
+                    fileWriter.write((Arrays.toString(outboundMinutes) + "\n").getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -124,6 +126,7 @@ public class ShowStop extends Activity {
             test.setText(myDevice.getWeekday() + " " + deviceMinutes);
             test.append("\n" + bufferedReader.readLine());
             test.append("\n" + bufferedReader.readLine());
+            test.append("\nRead from phone.");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -165,6 +168,38 @@ public class ShowStop extends Activity {
             View rootView = inflater.inflate(R.layout.fragment_show_stop, container, false);
             return rootView;
         }
+    }
+
+    /**
+     * Convert times to minutes. i.e. 12:32pm becomes 752
+     */
+    private int[] timesToMinutes(String[] times) {
+        int[] timesInMinutes = new int[times.length];
+        for (int i = 0; i < times.length; i++) {
+            int minutes = 0;
+            if (times[i].charAt(6) == 'p') {
+                minutes += 720; //if pm then add all minutes for elapsed am
+            }
+            if (!times[i].substring(1,3).equals("12")) {
+                minutes += Integer.parseInt(times[i].substring(1,3)) * 60; //hours to minutes
+            }
+            minutes += Integer.parseInt(times[i].substring(4,6));
+            timesInMinutes[i] = minutes;
+        }
+        return timesInMinutes;
+    }
+
+    /**
+     * Find the next time using a binary search
+     */
+    private int nextTime(int[] times) {
+        int currentMostRelevantIndex = times.length / 2;
+        int myTime = deviceMinutes;
+        boolean found = false;
+        while (!found) {
+
+        }
+        return currentMostRelevantIndex;
     }
 
 }

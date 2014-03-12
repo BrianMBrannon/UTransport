@@ -66,9 +66,9 @@ public class BusStop {
 
     public String getRouteNumber() throws IOException { return id; }
 
-    public String getInboundTimes() { return Arrays.toString(inboundTimes); }
+    public String[] getInboundTimes() { return inboundTimes; }
 
-    public String getOutboundTimes() { return Arrays.toString(outboundTimes); }
+    public String[] getOutboundTimes() { return outboundTimes; }
 
     public InputStream retrieveSourceStream() throws IOException {
 
