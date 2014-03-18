@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ShowStop extends Activity {
@@ -51,7 +52,7 @@ public class ShowStop extends Activity {
         //NOTE that the fileName is the stopNumber in a .txt file.  Eg. 3852.txt
         File myFile = getApplicationContext().getFileStreamPath(stopNumber + ".txt");
         //delete the file for testing purposes
-        myFile.delete();
+        //myFile.delete();
 
         //if the file exists we can read the times from the device itself
         if (!myFile.exists()) {
@@ -89,7 +90,7 @@ public class ShowStop extends Activity {
                 int[] outboundMinutes = timesToMinutes(myStop.getOutboundTimes());
                 test.setText(Arrays.toString(inboundMinutes));
                 test.append("\n" + Arrays.toString(outboundMinutes));
-                test.append("\n" + nextTime(outboundMinutes, 0, outboundMinutes.length, 0));
+                test.append("\n" + minutesToTime(nextTime(outboundMinutes)));
 
                 try {
                     FileOutputStream fileWriter;
@@ -126,8 +127,11 @@ public class ShowStop extends Activity {
             MobileDevice myDevice = new MobileDevice();
             test.setText(myDevice.getWeekday() + " " + deviceMinutes);
             test.append("\n" + bufferedReader.readLine());
-            test.append("\n" + bufferedReader.readLine());
+            String outBoundLine = bufferedReader.readLine();
+            test.append("\n" + outBoundLine);
             test.append("\nRead from phone.");
+            test.append("\nNextTime: " + minutesToTime(nextTime(stringLineToArray(outBoundLine))));
+            test.append("\n752 = " + minutesToTime(752));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -191,8 +195,35 @@ public class ShowStop extends Activity {
     }
 
     /**
+     * convert minutes to time. e.g. 752 becomes 12:32pm
+     */
+    private String minutesToTime(int minutes) {
+        String time = "";
+        String amOrPm = "";
+        if (minutes >= 720) {
+            amOrPm = "pm";
+            minutes -= 720;
+        }
+        else
+            amOrPm = "am";
+
+        //find hours
+        if (minutes / 60 == 0)
+            time += "12:";
+        else
+            time += minutes / 60 + ":";
+        time += minutes % 60;
+        time += amOrPm;
+        return time;
+    }
+
+    /**
      * Find the next time using a special binary search
      */
+    private int nextTime(int[] times) {
+        return nextTime(times, 0, times.length, 0);
+    }
+
     private int nextTime(int[] times, int startIndex, int endIndex, int closestTimeSoFar) {
         if (startIndex >= endIndex) return closestTimeSoFar;
         //base case
@@ -211,5 +242,50 @@ public class ShowStop extends Activity {
             return times[currentMostRelevantIndex];
         }
     }
+
+    /**
+     * Time a string written to a file and turn it into a searchable array of ints
+     */
+    private int[] stringLineToArray(String line) {
+        //int[] with correct amount of entries
+        ArrayList<Integer> times = new ArrayList<Integer>();
+        StringBuffer stringBuffer = new StringBuffer(line);
+        //I start variables at 1 instead of 0 to avoid the inevitable '['
+        int singleTimeStartIndex = 1;
+        int singleTimeEndIndex = 1;
+        for (int i = 1; i < stringBuffer.length(); i++) {
+            if (stringBuffer.charAt(i) == ' ') {
+                System.out.println("FOUND A SPACE");
+                times.add(Integer.parseInt(stringBuffer.substring(singleTimeStartIndex, singleTimeEndIndex - 1)));
+                System.out.println(times);
+                //subtract two to avoid the ", "
+                singleTimeStartIndex = i + 1;
+                singleTimeEndIndex++;
+            }
+            else {
+                System.out.println("NO SPACE");
+                singleTimeEndIndex++;
+            }
+        }
+        //Solve Fencepost Problem, for loop cannot add the very last integer
+        //Instead of taking the last 4 digits, take all digits until a ' ' to be flexible.
+        //O(1) basically since the only options are three or four iterations
+        int index = stringBuffer.length() - 2; //-2 to avoid inevitable ']'
+        while (stringBuffer.charAt(index) != ' ') {
+            index--;
+        }
+        times.add(Integer.parseInt(stringBuffer.substring(index + 1, stringBuffer.length() - 1)));
+        return intArrayListToArray(times);
+    }
+
+    //Helper method to convert an arraylist of integers to a native array
+    private int[] intArrayListToArray(ArrayList<Integer> list) {
+        int[] newArray = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            newArray[i] = list.get(i);
+        }
+        return newArray;
+    }
+
 
 }

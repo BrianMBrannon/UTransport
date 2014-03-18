@@ -4,4 +4,6 @@ Collect all UT shuttle stop ids?
 Collect each stop's arrival/departure times.
 Save option for times
 
+//MARCH
 At 9:14/9:15 No Times were found exception in BusStop's times method.  Very strange.
+Write the times differently to ####.txt to support multiple days; also read differently
