@@ -51,7 +51,7 @@ public class ShowStop extends Activity {
         //NOTE that the fileName is the stopNumber in a .txt file.  Eg. 3852.txt
         File myFile = getApplicationContext().getFileStreamPath(stopNumber + ".txt");
         //delete the file for testing purposes
-        //myFile.delete();
+        myFile.delete();
 
         //if the file exists we can read the times from the device itself
         if (!myFile.exists()) {
@@ -89,6 +89,7 @@ public class ShowStop extends Activity {
                 int[] outboundMinutes = timesToMinutes(myStop.getOutboundTimes());
                 test.setText(Arrays.toString(inboundMinutes));
                 test.append("\n" + Arrays.toString(outboundMinutes));
+                test.append("\n" + nextTime(outboundMinutes, 0, outboundMinutes.length, 0));
 
                 try {
                     FileOutputStream fileWriter;
@@ -190,16 +191,25 @@ public class ShowStop extends Activity {
     }
 
     /**
-     * Find the next time using a binary search
+     * Find the next time using a special binary search
      */
-    private int nextTime(int[] times) {
-        int currentMostRelevantIndex = times.length / 2;
-        int myTime = deviceMinutes;
-        boolean found = false;
-        while (!found) {
+    private int nextTime(int[] times, int startIndex, int endIndex, int closestTimeSoFar) {
+        if (startIndex >= endIndex) return closestTimeSoFar;
+        //base case
 
+        int currentMostRelevantIndex = (startIndex + endIndex) / 2;
+        if (times[currentMostRelevantIndex] < deviceMinutes) {
+            closestTimeSoFar = times[currentMostRelevantIndex + 1];
+            return nextTime(times, currentMostRelevantIndex + 1, endIndex, closestTimeSoFar);
         }
-        return currentMostRelevantIndex;
+        else if (times[currentMostRelevantIndex] > deviceMinutes) {
+            closestTimeSoFar = times[currentMostRelevantIndex];
+            return nextTime(times, startIndex, currentMostRelevantIndex, closestTimeSoFar);
+        }
+        else {
+            //times[currentMostRelevantIndex] == deviceMinutes
+            return times[currentMostRelevantIndex];
+        }
     }
 
 }
