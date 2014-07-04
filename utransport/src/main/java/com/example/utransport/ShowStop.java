@@ -212,6 +212,7 @@ public class ShowStop extends Activity {
             time += "12:";
         else
             time += minutes / 60 + ":";
+        if (minutes % 60 == 0) time += minutes % 60;
         time += minutes % 60;
         time += amOrPm;
         return time;
